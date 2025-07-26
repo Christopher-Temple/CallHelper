@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Call Helper</title>
+  <hta:application
+    id="CallHelperPRO"
+    applicationname="Call Helper"
+    border="none"
+    singleinstance="yes"
+    windowstate="normal" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 6px;
+      background-color: #101820;
+      color: #ffffff;
+      max-width: 350px;
+    }
+    .section-title {
+      margin-top: 18px;
+      font-size: 14px;
+      color: #ffaa00;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #333;
+      margin-bottom: 10px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .check-item {
+      display: flex;
+      align-items: center;
+      background-color: #1e2a38;
+      padding: 5px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      font-size: 10px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .check-item.checked-text {
+      text-decoration: line-through;
+      color: #00d4ff;
+      animation: bounce 0.25s;
+    }
+    @keyframes bounce {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    .check-symbol {
+      font-size: 12px;
+      margin-right: 10px;
+      color: #ccc;
+      transition: color 0.2s ease;
+      user-select: none;
+    }
+    .check-symbol.checked {
+      color: #00d4ff;
+    }
+	.check-symbol-optional {
+      font-size: 12px;
+      margin-right: 10px;
+      color: #ccc;
+      transition: color 0.2s ease;
+      user-select: none;
+    }
+    .check-symbol-optional.checked {
+      color: #00d4ff;
+    }
+    textarea {
+      width: 100%;
+      height: 80px;
+      border-radius: 6px;
+      padding: 8px;
+      font-size: 13px;
+      background-color: #1e2a38;
+      color: #fff;
+      border: none;
+      margin-top: 6px;
+    }
+    #reset {
+      width: 25%;
+      padding: 5px;
+      background-color: #00d4ff;
+      color: #000;
+      border: none;
+      font-weight: bold;
+      border-radius: 6px;
+      font-size: 10px;
+      margin-top: 5px;
+      cursor: pointer;
+    }
+    #reset:hover {
+      background-color: #00b6d6;
+    }
+    input[type="text"] {
+      width: calc(100% - 12px);
+      padding: 6px;
+      margin-bottom: 6px;
+      border-radius: 4px;
+      border: none;
+      background-color: #1e2a38;
+      color: #fff;
+    }
+	.help-icon {
+	  position: absolute;
+	  top: 8px;
+	  right: 12px;
+	  width: 20px;
+	  height: 20px;
+	  background-color: #ffaa00;
+	  color: #101820;
+	  font-weight: bold;
+	  font-size: 14px;
+	  text-align: center;
+	  border-radius: 50%;
+	  cursor: help;
+	  line-height: 20px;
+	  font-family: Arial, sans-serif;
+	  user-select: none;
+	  z-index: 1000;
+	}
+	.toggle-btn {
+	  padding: 5px;
+	  background-color: #00d4ff;
+	  color: #000;
+	  border: none;
+	  font-weight: bold;
+	  border-radius: 6px;
+	  font-size: 12px;
+	  cursor: pointer;
+	  transition: background-color 0.2s ease;
+	  margin-right: 10px;
+	  height : 50%;
+	}
+
+	.toggle-btn:hover {
+	  background-color: #00b6d6;
+	}
+	#timerDisplay {
+	  font-size: 12px;
+	  font-weight: bold;
+	  color: #000; 
+	  background-color: #00d4ff;
+	  padding: 4px 8px;
+	  border-radius: 6px;
+	  width: auto;
+	  height: 50%;
+	  cursor: pointer;
+	  text-align: center;
+	  user-select: none;
+	  margin-bottom: 10px;
+	  transition: background-color 0.2s ease;
+	}
+
+	#timerDisplay:hover {
+	  background-color: #00b6d6; 
+	}
+
+  </style>
+</head>
+<body style="position: relative;">
+<div class="help-icon" title="Original by Britton Bryant&#10;Modified by Christopher Temple">&#x2753;</div>
+
+<div style="display:flex; justify-content:flex-start; gap:10px; margin-bottom:10px;">
+  <button id="toggleNotes" class="toggle-btn">Hide Notes</button>
+  <div id="timerDisplay" title="Hold Timer - Click to Start/Reset">
+    00:00
+  </div>
+</div>
+
+<div class="section-title">Checklist</div>
+<ul id="checklist">
+  <li class="check-item"><span class="check-symbol" data-checked="false">&#x1F4A1;</span> Discover Issue</li>
+  <li class="check-item"><span class="check-symbol" data-checked="false">&#x2714;</span> ARM Statement</li>
+  <li class="check-item"><span class="check-symbol" data-checked="false">&#x1F50E;</span> Troubleshooting Tree</li>
+  <li class="check-item"><span class="check-symbol" data-checked="false">&#x2692;</span> Resolution / Next Steps</li>
+  <li class="check-item"><span class="check-symbol" data-checked="false">&#x2709;</span> Helpful Hints / sb.net</li>
+  <li class="check-item"><span class="check-symbol" data-checked="false">&#x1F501;</span> Recap the Call</li>
+  <li class="check-item"><span class="check-symbol" data-checked="false">&#x1F3AF;</span> Closing Value Statement</li>
+</ul>
+
+<div class="section-title">Situational</div>
+<ul id="situational-checklist">
+ <li class="check-item"><span class="check-symbol-optional" data-checked="false">&#x1F512;</span> Account Authentication</li>  
+  <li class="check-item"><span class="check-symbol-optional" data-checked="false">&#x1F509;</span> Offer / Enroll Voice ID</li>  
+  <li class="check-item"><span class="check-symbol-optional" data-checked="false">&#x1F4DE;</span>Contact Preferences </li>
+  <li class="check-item"><span class="check-symbol-optional" data-checked="false">&#36;</span>Credit ( Customer Commitment or Outage ) </li>
+</ul>
+
+<div id="notesSection">
+<div class="section-title">Call Notes</div>
+<textarea placeholder="Write quick notes here..."></textarea>
+</div>
+<button id="reset">Reset All</button>
+
+
+<canvas id="confetti-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+<script language="javascript">
+window.onload = function() {
+  setTimeout(function() {
+    window.resizeTo(375, 850);
+    window.moveTo(400, 100);
+  }, 100);
+  
+   // Toggle Notes
+  const notesSection = document.getElementById('notesSection');
+  const toggleNotesBtn = document.getElementById('toggleNotes');
+  toggleNotesBtn.onclick = function() {
+    if (notesSection.style.display === 'none') {
+      notesSection.style.display = '';
+      toggleNotesBtn.textContent = 'Hide Notes';
+    } else {
+      notesSection.style.display = 'none';
+      toggleNotesBtn.textContent = 'Show Notes';
+    }
+  };
+
+
+  var items = document.querySelectorAll('.check-item');
+  for (var i = 0; i < items.length; i++) {
+    items[i].onclick = function (e) {
+      e = e || window.event;
+      var icon = this.querySelector('.check-symbol');
+      if (icon) {
+        var isChecked = icon.classList.toggle('checked');
+        icon.setAttribute('data-checked', isChecked);
+
+        if (isChecked) {
+          this.classList.add('checked-text');
+        } else {
+          this.classList.remove('checked-text');
+        }
+
+        checkAllChecked();
+      }
+	  var icon2 = this.querySelector('.check-symbol-optional');
+      if (icon2) {
+        var isChecked = icon2.classList.toggle('checked');
+        icon2.setAttribute('data-checked', isChecked);
+
+        if (isChecked) {
+          this.classList.add('checked-text');
+        } else {
+          this.classList.remove('checked-text');
+        }
+      }
+    };
+  }
+
+  document.getElementById("reset").onclick = function() {
+    var icons = document.querySelectorAll('.check-symbol');
+    for (var i = 0; i < icons.length; i++) {
+      icons[i].classList.remove('checked');
+      icons[i].setAttribute('data-checked', 'false');
+      icons[i].parentNode.classList.remove('checked-text');
+    }
+	var icons2 = document.querySelectorAll('.check-symbol-optional');
+    for (var i = 0; i < icons2.length; i++) {
+      icons2[i].classList.remove('checked');
+      icons2[i].setAttribute('data-checked', 'false');
+      icons2[i].parentNode.classList.remove('checked-text');
+    }
+    document.querySelector("textarea").value = "";
+  };
+
+  function checkAllChecked() {
+    var icons = document.querySelectorAll('.check-symbol');
+    for (var i = 0; i < icons.length; i++) {
+      if (!icons[i].classList.contains('checked')) {
+        return;
+      }
+    }
+    showPositiveCelebration();
+  }
+
+  function showPositiveCelebration() {
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+  }
+
+ };
+</script>
+<script>
+  var timerInterval = null;
+  var timerSeconds = 0;
+  var timerDisplay = document.getElementById("timerDisplay");
+
+  function pad(n) {
+    return (n < 10) ? '0' + n : n;
+  }
+
+  function formatTime(seconds) {
+    var m = Math.floor(seconds / 60);
+    var s = seconds % 60;
+    return pad(m) + ':' + pad(s);
+  }
+
+  function updateTimerDisplay() {
+    timerDisplay.innerHTML = '&#x23F0; ' + formatTime(timerSeconds);
+  }
+
+  timerDisplay.onclick = function () {
+    if (timerInterval) {
+      // Stop and reset
+      clearInterval(timerInterval);
+      timerInterval = null;
+      timerSeconds = 0;
+      updateTimerDisplay();
+    } else {
+      // Reset if already at 3 mins
+      if (timerSeconds >= 180) {
+        timerSeconds = 0;
+        updateTimerDisplay();
+      }
+
+      timerInterval = setInterval(function () {
+        if (timerSeconds < 180) {
+          timerSeconds++;
+          updateTimerDisplay();
+        } else {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
+      }, 1000);
+    }
+  };
+
+  updateTimerDisplay();
+</script>
+</body>
+</html>
