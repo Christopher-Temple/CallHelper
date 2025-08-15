@@ -84,6 +84,8 @@
       color: #fff;
       border: none;
       margin-top: 6px;
+	  resize: vertical;
+	  
     }
     #reset {
       width: 25%;
@@ -144,39 +146,98 @@
 	.toggle-btn:hover {
 	  background-color: #00b6d6;
 	}
-	#timerDisplay {
-	  font-size: 12px;
+	
+	
+	input[type="text"] {
+	  flex-grow: 1;
+	  padding: 6px;
+	  border-radius: 4px;
+	  border: none;
+	  background-color: #1e2a38;
+	  color: #fff;
+	}
+	#ipAddress {
+	  width: 50% !important;
+	}
+	..collapse-btn {
+	  background: none;
+	  border: none;
+	  color: #ffaa00;
 	  font-weight: bold;
-	  color: #000; 
-	  background-color: #00d4ff;
-	  padding: 4px 8px;
-	  border-radius: 6px;
-	  width: auto;
-	  height: 50%;
+	  font-size: 24px;
 	  cursor: pointer;
+	  padding: 0 6px;
+	  min-width: 22px;
 	  text-align: center;
 	  user-select: none;
-	  margin-bottom: 10px;
+	  line-height: 1;
+	  text-decoration: none; 
+	  cursor: default;
+	}
+
+	.collapse-btn:hover {
+	  text-decoration: none; 
+	  cursor: default;
+	  color: #ffcc33;
+	}
+
+	.collapse-btn:focus {
+	  outline: none;
+	  text-decoration: none; 
+	  cursor: default;
+	}
+
+	.collapse-btn:active {
+	  text-decoration: none;
+	  cursor: default;
+	}
+	.action-btn {
+	  background-color: #00d4ff;
+	  color: #000;
+	  font-weight: bold;
+	  border: none;
+	  border-radius: 6px;
+	  font-size: 12px;
+	  height: 22px;
+	  padding: 0 10px;
+	  cursor: pointer;
 	  transition: background-color 0.2s ease;
+	  display: inline-block;
+	  align-items: center;
+	  user-select: none;
+	  margin-right: 10px;
+	  vertical-align: middle;	  
 	}
 
-	#timerDisplay:hover {
-	  background-color: #00b6d6; 
+	.action-btn:hover {
+	  background-color: #00b6d6;
 	}
-
   </style>
 </head>
 <body style="position: relative;">
 <div class="help-icon" title="Original by Britton Bryant&#10;Modified by Christopher Temple">&#x2753;</div>
 
-<div style="display:flex; justify-content:flex-start; gap:10px; margin-bottom:10px;">
-  <button id="toggleNotes" class="toggle-btn">Hide Notes</button>
-  <div id="timerDisplay" title="Hold Timer - Click to Start/Reset">
-    00:00
-  </div>
+
+<div class="section-title" style="display: flex; align-items: center; justify-content: space-between;">
+  <span>Utilities</span>
+  <span class="collapse-btn" data-target="utilities">-</span>
+</div>
+<div id="utilities" style="gap: 6px; align-items: center;">
+  <input type="text" id="ipAddress" placeholder="Enter IP or MAC">
+  <button id="pingBtn" class="toggle-btn" style="height:auto;">Ping</button>
+  <button id="lookupBtn" class="toggle-btn" style="height:auto;">MAC</button>
+  <div>
+  <button id="timerDisplay" class="action-btn" title="Hold Timer - Click to Start/Reset">00:00</button>
+  <button id="lalBtn" class="action-btn">LAL</button>
+  <button id="templateBtn" class="action-btn">Template</button>
+  <span id="copyFeedback" style="color: #00d4ff; font-size: 12px; display: none;">Copied!</span>
+</div>
 </div>
 
-<div class="section-title">Checklist</div>
+<div class="section-title" style="display: flex; align-items: center; justify-content: space-between;">
+  <span>Checklist</span>
+  <span class="collapse-btn" data-target="checklist">-</span>
+</div>
 <ul id="checklist">
   <li class="check-item"><span class="check-symbol" data-checked="false">&#x1F4A1;</span> Discover Issue</li>
   <li class="check-item"><span class="check-symbol" data-checked="false">&#x2714;</span> ARM Statement</li>
@@ -187,7 +248,10 @@
   <li class="check-item"><span class="check-symbol" data-checked="false">&#x1F3AF;</span> Closing Value Statement</li>
 </ul>
 
-<div class="section-title">Situational</div>
+<div class="section-title" style="display: flex; align-items: center; justify-content: space-between;">
+  <span>Situational</span>
+  <span class="collapse-btn" data-target="situational-checklist">-</span>
+</div>
 <ul id="situational-checklist">
  <li class="check-item"><span class="check-symbol-optional" data-checked="false">&#x1F512;</span> Account Authentication</li>  
   <li class="check-item"><span class="check-symbol-optional" data-checked="false">&#x1F509;</span> Offer / Enroll Voice ID</li>  
@@ -195,9 +259,9 @@
   <li class="check-item"><span class="check-symbol-optional" data-checked="false">&#36;</span>Credit ( Customer Commitment or Outage ) </li>
 </ul>
 
-<div id="notesSection">
-<div class="section-title">Call Notes</div>
-<textarea placeholder="Write quick notes here..."></textarea>
+<div id="notesContainer" style="position: relative; width: 100%; height: 80px;">
+  <textarea id="notesTextarea" style="width: 100%; height: 100%;overflow: hidden;"></textarea>
+  <div id="resizer" title="Click and drag to resize" style="position: absolute; right: 2px; bottom: 2px; width: 12px; height: 12px; cursor: se-resize; background-color: #ffaa00; border-radius: 2px; "></div>
 </div>
 <button id="reset">Reset All</button>
 
@@ -210,19 +274,6 @@ window.onload = function() {
     window.resizeTo(375, 850);
     window.moveTo(400, 100);
   }, 100);
-  
-   // Toggle Notes
-  const notesSection = document.getElementById('notesSection');
-  const toggleNotesBtn = document.getElementById('toggleNotes');
-  toggleNotesBtn.onclick = function() {
-    if (notesSection.style.display === 'none') {
-      notesSection.style.display = '';
-      toggleNotesBtn.textContent = 'Hide Notes';
-    } else {
-      notesSection.style.display = 'none';
-      toggleNotesBtn.textContent = 'Show Notes';
-    }
-  };
 
 
   var items = document.querySelectorAll('.check-item');
@@ -339,5 +390,133 @@ window.onload = function() {
 
   updateTimerDisplay();
 </script>
+
+<script language="javascript">
+  document.getElementById("pingBtn").onclick = function () {
+    var ip = document.getElementById("ipAddress").value.trim();
+    if (ip === "") {
+      alert("Please enter an IP address.");
+      return;
+    }
+
+    try {
+      var shell = new ActiveXObject("WScript.Shell");
+      shell.Run("cmd.exe /k ping -t " + ip);
+    } catch (e) {
+      alert("Failed to open command prompt. This may be blocked by your system settings.");
+    }
+  };
+</script>
+
+<script language="javascript">
+  document.getElementById("lookupBtn").onclick = function () {
+    var ipInput = document.getElementById("ipAddress");
+    var macInput = ipInput.value.trim();
+
+   
+    var macAddress = macInput.replace(/[:\s]/g, "").toUpperCase();
+
+    if (macAddress === "" || macAddress.length < 6) {
+      alert("Please enter a valid MAC address.");
+      return;
+    }
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "https://api.macvendors.com/" + macAddress, true);
+
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          ipInput.value = xhr.responseText;  
+        } else {
+          ipInput.value = "Vendor Not Found";
+        }
+      }
+    };
+
+    xhr.send();
+  };
+</script>
+
+<script language="javascript">
+  var collapseButtons = document.getElementsByClassName('collapse-btn');
+
+  for (var i = 0; i < collapseButtons.length; i++) {
+    collapseButtons[i].onclick = function() {
+      var targetId = this.getAttribute('data-target');
+      var target = document.getElementById(targetId);
+
+      if (target.style.display === 'none') {
+        target.style.display = '';
+        this.innerText = '-';
+      } else {
+        target.style.display = 'none';
+        this.innerText = '+';
+      }
+    };
+  }
+</script>
+
+<script language="javascript">
+  function showCopyFeedback() {
+    var feedback = document.getElementById('copyFeedback');
+    feedback.style.display = 'inline';
+    setTimeout(function() {
+      feedback.style.display = 'none';
+    }, 1500);
+  }
+
+  document.getElementById('lalBtn').onclick = function() {
+    window.clipboardData.setData('Text', '8775000');
+    showCopyFeedback();
+  };
+
+  document.getElementById('templateBtn').onclick = function() {
+    var templateText = "PID: \nAccount Number: \nBusiness Name: \nBusiness Address: \nCaller Name: \nIssue: \nTroubleshooting: ";
+    window.clipboardData.setData('Text', templateText);
+	// Open SCI CoPilot
+	var shell = new ActiveXObject("WScript.Shell");
+    shell.Run("https://www.google.com");
+    showCopyFeedback();
+  };
+</script>
+
+<script language="javascript">
+	// resize notes script
+  var resizer = document.getElementById('resizer');
+  var container = document.getElementById('notesContainer');
+  var isResizing = false;
+
+  resizer.onmousedown = function(e) {
+    isResizing = true;
+    document.onmousemove = function(e) {
+      if (isResizing) {
+        var newHeight = e.clientY - container.getBoundingClientRect().top;
+        if (newHeight > 50) { // Minimum height
+          container.style.height = newHeight + 'px';
+        }
+      }
+    };
+    document.onmouseup = function() {
+      isResizing = false;
+      document.onmousemove = null;
+      document.onmouseup = null;
+    };
+  };
+</script>
+
+<script language="javascript">
+	// script for scrolling text area
+  var notesTextarea = document.getElementById('notesTextarea');
+
+  notesTextarea.onmousewheel = function(e) {
+    e = e || window.event;
+    var delta = e.wheelDelta ? e.wheelDelta : -e.detail;
+
+    notesTextarea.scrollTop -= delta / 3; // Adjust scroll sensitivity
+    return false; // Prevent page scrolling
+  };
+</script>
+
 </body>
 </html>
